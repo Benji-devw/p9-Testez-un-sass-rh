@@ -55,6 +55,13 @@ Lancez l'application :
 ```
 $ live-server
 ```
+Fix live server
+```
+npm install live-server --dev-save
+add package.json => "scripts": {"server": "live-server"}
+npm run server
+```
+
 
 Puis allez à l'adresse : `http://127.0.0.1:8080/`
 
@@ -84,7 +91,7 @@ Vous pouvez vous connecter en utilisant les comptes:
 
 ### administrateur : 
 ```
-utilisateur : admin@test.tld 
+utilisateur : admin@test.tld
 mot de passe : admin
 ```
 ### employé :
