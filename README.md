@@ -55,6 +55,7 @@ Lancez l'application :
 ```
 $ live-server
 ```
+
 Fix live server
 ```
 npm install live-server --dev-save
@@ -70,6 +71,7 @@ Puis allez à l'adresse : `http://127.0.0.1:8080/`
 
 ```
 $ npm run test
+$ npm run test --watch ./src/__tests__/Bills.js
 ```
 
 ## Comment lancer un seul test ?
