@@ -21,7 +21,7 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    console.log('file', file);
+    // console.log('file', file);
 
     if (file.type !== 'image/png' && file.type !== 'image/jpeg' && file.type !== 'image/jpg') {
       this.document.querySelector(`input[data-testid="file"]`).value = null;
