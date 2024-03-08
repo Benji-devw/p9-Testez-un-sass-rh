@@ -1,6 +1,9 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
 
+// FIXME: Si je charger un fichier dans le formulaire, cela ajout en db sans prévenir l'utilisateur
+// Je retrouve reviens sur /bills sans envoyer le formulaire, je retrouve une nouvelle notes avec les champs null "le fichier est bien présent"
+
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document
@@ -18,6 +21,13 @@ export default class NewBill {
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    console.log('file', file);
+
+    if (file.type !== 'image/png' && file.type !== 'image/jpeg' && file.type !== 'image/jpg') {
+      this.document.querySelector(`input[data-testid="file"]`).value = null;
+      return alert('Ce type de fichier n\'est pas accepté');
+    }
+
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
