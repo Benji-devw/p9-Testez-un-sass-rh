@@ -79,7 +79,6 @@ export default class {
   }
 
   handleClickIconEye = () => {
-    //FIXME: billUrl value = filePath not fileName = image not found
     const billUrl = $('#icon-eye-d').attr("data-bill-url")
     console.log(billUrl);
     const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
