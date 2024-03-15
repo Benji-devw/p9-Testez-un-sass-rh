@@ -79,7 +79,9 @@ export default class {
   }
 
   handleClickIconEye = () => {
+    //FIXME: billUrl value = filePath not fileName = image not found
     const billUrl = $('#icon-eye-d').attr("data-bill-url")
+    console.log(billUrl);
     const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
     $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} alt="Bill"/></div>`)
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
@@ -99,13 +101,14 @@ export default class {
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
-      $('.dashboard-right-container div').html(`
-        <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
-      `)
+      // $('.dashboard-right-container div').html(`
+      //   <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+      // `)
       $('.vertical-navbar').css({ height: '120vh' })
       this.counter ++
     }
     $('#icon-eye-d').click(this.handleClickIconEye)
+    // $('#btn-pending-bill').click((e) => this.handleRefuseSubmit(e, bill))
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
   }
