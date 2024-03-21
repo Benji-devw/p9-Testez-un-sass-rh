@@ -87,6 +87,7 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
+    console.log(bill);
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
     if (this.counter % 2 === 0) {
@@ -100,14 +101,13 @@ export default class {
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
-      // $('.dashboard-right-container div').html(`
-      //   <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
-      // `)
+      $('.dashboard-right-container div').html(`
+        <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
+      `)
       $('.vertical-navbar').css({ height: '120vh' })
       this.counter ++
     }
     $('#icon-eye-d').click(this.handleClickIconEye)
-    // $('#btn-pending-bill').click((e) => this.handleRefuseSubmit(e, bill))
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
   }
@@ -148,6 +148,7 @@ export default class {
     }
 
     bills.forEach(bill => {
+      $(`#open-bill${bill.id}`).unbind("click")
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
 
