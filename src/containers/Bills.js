@@ -32,6 +32,7 @@ export default class {
       .html(
         `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
       );
+    if (typeof $("#modaleFile").modal === 'function')
     $("#modaleFile").modal("show");
   };
 
