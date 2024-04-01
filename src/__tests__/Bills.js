@@ -12,6 +12,7 @@ import {localStorageMock} from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import mockStore from "../__mocks__/store"
 
+
 describe("Given I am connected as an employee", () => {
   beforeEach(() => {
     jest.spyOn(mockStore, "bills")
@@ -33,10 +34,8 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
       window.onNavigate(ROUTES_PATH.Bills)
-
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
        expect(windowIcon.classList).toContain('active-icon')
     })
 
@@ -61,17 +60,17 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
-    //FIXME: test the error message NOT WORKING
+    //FIXME: test the error 500
     test("fetches messages from an API and fails with 500 message error", async () => {
-      // mockStore.bills.mockImplementationOnce(() => {
-      //   return {
-      //     list : () =>  { return Promise.reject(new Error("Erreur 500")) }
-      //   }})
+      mockStore.bills.mockImplementationOnce(() => {
+        return {
+          list : () =>  { return Promise.reject(new Error("Erreur 500")) }
+        }})
 
-      //   window.onNavigate(ROUTES_PATH.Bills)
-      //   await new Promise(process.nextTick);
-      //   const message = await screen.findByText(/Erreur 500/)
-      //   expect(message).toBeTruthy()
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.findByText(/Erreur/)
+        expect(message).toBeTruthy()
     })
   })
 
