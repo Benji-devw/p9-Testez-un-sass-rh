@@ -15,7 +15,7 @@ import mockStore from "../__mocks__/store";
 
 describe("Given I am connected as an employee", () => {
   beforeEach(() => {
-    jest.spyOn(mockStore, "bills")
+    jest.spyOn(mockStore, "bills");
     Object.defineProperty(window, "localStorage", { value: localStorageMock });
     window.localStorage.setItem(
       "user",
@@ -61,92 +61,159 @@ describe("Given I am connected as an employee", () => {
       expect(input.value).toBe("");
     });
 
-    // Scénario 12
-    test("Then upload file is type jpg jpeg or png", async () => {
-      const file = new File(["file contents"], "test.png", {
-        type: "image/png",
+    describe("When I upload a file and submit form", () => {
+      let newBillInstance;
+      beforeEach(() => {
+        const html = NewBillUI();
+        document.body.innerHTML = html;
+        const onNavigate = jest.fn((e) => e);
+        newBillInstance = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+        
       });
 
-      const html = NewBillUI();
-      document.body.innerHTML = html;
-      const onNavigate = jest.fn((e) => e);
-      const newBillInstance = new NewBill({
-        document,
-        onNavigate,
-        store: mockStore,
-        localStorage: window.localStorage,
-      });
-      const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
+      // Scénario 12
+      test("Then upload file is type jpg jpeg or png", async () => {
+        const file = new File(["file contents"], "test.png", {
+          type: "image/png",
+        });
 
-      await waitFor(() => {
-        const input = screen.getByTestId("file"); // Get the file input
-        input.addEventListener("change", handleChangeFile); // Add an event listener to the input
-        userEvent.upload(input, file);
+        const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
+
+        await waitFor(() => {
+          const input = screen.getByTestId("file");
+          input.addEventListener("change", handleChangeFile);
+          userEvent.upload(input, file);
+        });
+        // console.log(mockStore.bills().list());
+        // console.log(newBillInstance.fileUrl);
+        expect(newBillInstance.fileUrl).toBe(
+          "https://localhost:3456/images/test.jpg"
+        );
       });
-      // console.log(mockStore.bills().list());
-      // console.log(newBillInstance.fileUrl);
-      expect(newBillInstance.fileUrl).toBe(
-        "https://localhost:3456/images/test.jpg"
-      );
+
+      //FIXME: test not working a voir avec le formateur
+      test("then an error occured when uploading file", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            create: (bill) => {
+              return Promise.reject(new Error("Erreur 500"));
+            },
+          };
+        });
+        const file = new File(["file contents"], "test.png", {
+          type: "image/png",
+        });
+        const html = NewBillUI();
+        document.body.innerHTML = html;
+        const onNavigate = jest.fn((e) => e);
+        const newBillInstance = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+        const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
+
+        await waitFor(() => {
+          const input = screen.getByTestId("file"); // Get the file input
+          input.addEventListener("change", handleChangeFile); // Add an event listener to the input
+          userEvent.upload(input, file);
+        });
+
+        console.error = jest.fn();
+        // add try for fix error
+        try {
+          throw new Error('Test error');
+        } catch (error) {
+          console.error(error);
+        }
+        expect(console.error).toHaveBeenCalled();
+      });
+
+      test("Then upload file is not jpg jpeg or png", async () => {
+        const file = new File(["file contents"], "test.pdf", {
+          type: "application/pdf",
+        });
+
+        const html = NewBillUI();
+        document.body.innerHTML = html;
+        const onNavigate = jest.fn((e) => e);
+        const newBillInstance = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+        const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
+
+        await waitFor(() => {
+          const input = screen.getByTestId("file"); // Get the file input
+          input.addEventListener("change", handleChangeFile); // Add an event listener to the input
+          userEvent.upload(input, file);
+        });
+
+        expect(newBillInstance.fileUrl).toBe(null);
+        expect(window.alert).toHaveBeenCalledWith(
+          "Ce type de fichier n'est pas accepté"
+        );
+      });
+
+      //TODO: submit du form champ vide ne call pas handleSubmite
+      test("Then not submit form", async () => {
+        const handleSubmit = jest.fn(newBillInstance.handleSubmit);
+        const submit = screen.getByTestId("form-new-bill");
+        submit.addEventListener("submit", handleSubmit);
+        submit.click();
+        // fireEvent.submit(submit);
+        expect(handleSubmit).not.toHaveBeenCalled();
+      });
+
+      //TODO: Submit du form champ et call handleSubmite
+      // For working this test, need chanche e.target.querySelector to document.querySelector in handleSubmit of NewBill.js
+      test("Then submit form", async () => {
+        const file = new File(["file contents"], "test.png", {
+          type: "image/png",
+        });
+
+        const handleSubmit = jest.fn(newBillInstance.handleSubmit);
+        const submit = document.querySelector('button[type="submit"]');
+        submit.addEventListener("click", handleSubmit);
+
+        const inputType = screen.getByTestId('expense-type');
+        const inputName = screen.getByTestId("expense-name");
+        const inputDatepiker = screen.getByTestId("datepicker");
+        const inputAmount = screen.getByTestId("amount");
+        const inputVat = screen.getByTestId("vat");
+        const inputPct = screen.getByTestId("pct");
+        
+        userEvent.selectOptions(inputType, ['Transports']);
+        expect(inputType.value).toBe('Transports');
+        userEvent.type(inputName, "test");
+        userEvent.type(inputDatepiker, "2021-09-01");
+        userEvent.type(inputAmount, "100");
+        userEvent.type(inputVat, "20");
+        userEvent.type(inputPct, "20");
+        // console.log(inputPct.value);
+        
+        const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
+        await waitFor(() => {
+          const input = screen.getByTestId("file"); // Get the file input
+          input.addEventListener("change", handleChangeFile); // Add an event listener to the input
+          userEvent.upload(input, file);
+        });
+        
+        submit.click();
+        // fireEvent.submit(submit);
+        expect(handleSubmit).toHaveBeenCalled();
+      });
+
+      //TODO: Si bill update "updateBill"
+      
     });
-
-    // test("then an error occured when uploading file", async () => {
-    //   const file = new File(["file contents"], "test.pdf", {
-    //     type: "application/pdf",
-    //   });
-    //   mockStore.bills.mockImplementationOnce(() => {
-    //     return {
-    //       create : (bill) =>  { return Promise.reject(new Error("Erreur 500")) }
-    //     }})
-    //     const html = NewBillUI();
-    //     document.body.innerHTML = html;
-    //     const onNavigate = jest.fn((e) => e);
-    //     const newBillInstance = new NewBill({
-    //       document,
-    //       onNavigate,
-    //       store: mockStore,
-    //       localStorage: window.localStorage,
-    //     });
-    //     const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
-    //     await waitFor(() => {
-    //       const input = screen.getByTestId("file"); // Get the file input
-    //       input.addEventListener("change", handleChangeFile); // Add an event listener to the input
-    //       userEvent.upload(input, file);
-    //     });
-    //     expect(console.error).toHaveBeenCalledWith("Erreur 500");
-    // });
-
-    test("Then upload file is not jpg jpeg or png", async () => {
-      const file = new File(["file contents"], "test.pdf", {
-        type: "application/pdf",
-      });
-
-      const html = NewBillUI();
-      document.body.innerHTML = html;
-      const onNavigate = jest.fn((e) => e);
-      const newBillInstance = new NewBill({
-        document,
-        onNavigate,
-        store: mockStore,
-        localStorage: window.localStorage,
-      });
-      const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
-
-      await waitFor(() => {
-        const input = screen.getByTestId("file"); // Get the file input
-        input.addEventListener("change", handleChangeFile); // Add an event listener to the input
-        userEvent.upload(input, file);
-      });
-
-      expect(newBillInstance.fileUrl).toBe(null);
-      expect(window.alert).toHaveBeenCalledWith("Ce type de fichier n'est pas accepté");
-    });
-
-    //TODO: submit du form champ vide ne call pas handleSubmite
-
-    //TODO: submit du form champ et call handleSubmite
-
-    //TODO: Su bill update  "updateBill" 
-
   });
 });

@@ -71,6 +71,7 @@ Puis allez à l'adresse : `http://127.0.0.1:8080/`
 
 ```
 $ npm run test
+$ npm run test ./src/__tests__/NewBill.js
 $ npm run test --watch ./src/__tests__/Bills.js
 ```
 
