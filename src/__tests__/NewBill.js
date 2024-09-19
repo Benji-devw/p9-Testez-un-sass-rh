@@ -31,6 +31,14 @@ describe("Given I am connected as an employee", () => {
   });
 
   describe("When I am on NewBill Page", () => {
+    // Scénario 8
+    test("Then im on NewBill page", async () => {
+      window.onNavigate(ROUTES_PATH.NewBill);
+      await waitFor(() => screen.getByTestId("form-new-bill"));
+      const form = screen.getByTestId("form-new-bill");
+      expect(form).toBeTruthy();
+    });
+    
     // Scénario 9
     test("Then mail icon in vertical layout should be highlighted", async () => {
       window.onNavigate(ROUTES_PATH.NewBill);
@@ -54,6 +62,22 @@ describe("Given I am connected as an employee", () => {
     });
 
     // Scénario 11
+    test("Then input Les champs Date Montant TTC  TVA Justificatif sont obligatoires ", async () => {
+      const html = NewBillUI();
+      document.body.innerHTML = html;
+      const inputDatepiker = screen.getByTestId("datepicker");
+      const inputAmount = screen.getByTestId("amount");
+      const inputVat = screen.getByTestId("vat");
+      const inputPct = screen.getByTestId("pct");
+      const inputFile = screen.getByTestId("file");
+
+      expect(inputDatepiker.required).toBe(true);
+      expect(inputAmount.required).toBe(true);
+      expect(inputVat.required).toBe(true);
+      expect(inputPct.required).toBe(true);
+      expect(inputFile.required).toBe(true);
+    });
+
     test("Then input 'Nom de la dépense' is empty ", async () => {
       const html = NewBillUI();
       document.body.innerHTML = html;
@@ -173,16 +197,16 @@ describe("Given I am connected as an employee", () => {
         expect(handleSubmit).not.toHaveBeenCalled();
       });
 
-      //TODO: Submit du form champ et call handleSubmite
+      // Scénario 12 & 13
       // For working this test, need chanche e.target.querySelector to document.querySelector in handleSubmit of NewBill.js
-      test("Then submit form", async () => {
+      test("Thenfill and submit form", async () => {
         const file = new File(["file contents"], "test.png", {
           type: "image/png",
         });
 
         const handleSubmit = jest.fn(newBillInstance.handleSubmit);
         const submit = document.querySelector('button[type="submit"]');
-        submit.addEventListener("click", handleSubmit);
+        submit.addEventListener("click", handleSubmit); // add event to the submit button
 
         const inputType = screen.getByTestId('expense-type');
         const inputName = screen.getByTestId("expense-name");
@@ -195,24 +219,39 @@ describe("Given I am connected as an employee", () => {
         expect(inputType.value).toBe('Transports');
         userEvent.type(inputName, "test");
         userEvent.type(inputDatepiker, "2021-09-01");
-        userEvent.type(inputAmount, "100");
+        userEvent.type(inputAmount, "qsdqsdsdq");
         userEvent.type(inputVat, "20");
         userEvent.type(inputPct, "20");
         // console.log(inputPct.value);
         
         const handleChangeFile = jest.fn(newBillInstance.handleChangeFile);
-        await waitFor(() => {
-          const input = screen.getByTestId("file"); // Get the file input
-          input.addEventListener("change", handleChangeFile); // Add an event listener to the input
-          userEvent.upload(input, file);
-        });
+
+        const input = screen.getByTestId("file"); // Get the file input
+        input.addEventListener("change", handleChangeFile); // Add an event listener to the input
+        userEvent.upload(input, file);
+ 
         
+        // Scénario 13
         submit.click();
-        // fireEvent.submit(submit);
-        expect(handleSubmit).toHaveBeenCalled();
+        expect(handleSubmit).toHaveBeenCalledTimes(1);
+      })
+      
+      // Scénario 14
+      test("ROUTES_PATH.Bills should be '#employee/bills'", () => {
+        // expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH.Bills);
+        // expect(screen.getByText(/Mes notes de frais/i)).toBeVisible();
+  
+        // await waitFor(() => screen.getByTestId('bills-title'))
+        // const tt = screen.getByTestId('bills-title')
+        // expect(tt.classList).toContain('content-title')
+          // const element = screen.getByTestId('bills-title')
+          // console.log(element);
       });
 
-      //TODO: Si bill update "updateBill"
+      //TODO: Scénario 15
+      //TODO: Scénario 16
+      //TODO: Scénario 17
+      //TODO: Scénario 18
       
     });
   });

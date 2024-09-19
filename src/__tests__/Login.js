@@ -8,6 +8,7 @@ import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
 
 describe("Given that I am a user on login page", () => {
+  // Scénario 1
   describe("When I do not fill fields and I click on employee button Login In", () => {
     test("Then It should renders Login page", () => {
       document.body.innerHTML = LoginUI();
@@ -27,6 +28,7 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  // Scénario 2
   describe("When I do fill fields in incorrect format and I click on employee button Login In", () => {
     test("Then It should renders Login page", () => {
       document.body.innerHTML = LoginUI();
@@ -48,6 +50,7 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  // Scénario 3
   describe("When I do fill fields in correct format and I click on employee button Login In", () => {
     test("Then I should be identified as an Employee in app", () => {
       document.body.innerHTML = LoginUI();
